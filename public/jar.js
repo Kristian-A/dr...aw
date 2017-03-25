@@ -7,8 +7,6 @@ Jar = function(x, y, width) {
 	this.height = width*1.4;
 	this.level = 100;
 
-	this.lastTime = millis();
-
 	this.show = function() {
 		image(this.jarimg, this.x, this.y, this.width, this.height);
 	}
@@ -27,15 +25,5 @@ Jar = function(x, y, width) {
 		vertex(this.x, this.y+this.height);
 
 		endShape();
-	}
-
-	this.drain = function(color) {
-		if (millis() - this.lastTime > 30) {
-			console.log('tok');
-			this.lastTime = millis();
-			return 0.1;
-			//this.fill(color, this.level);
-		}
-		return 0;
 	}
 }

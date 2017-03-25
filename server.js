@@ -7,13 +7,15 @@ var io = require('socket.io')(server);
 
 var users = [];
 
+var lastTime = new Date().getTime();
+
 var permutations = [
 	["drawer", "saboteur", "spectator"],
 	["spectator", "drawer", "saboteur"],
 	["saboteur", "spectator", "drawer"]
 ]
 
-var currentPerm = Math.floor(Math.random()*(freeRoles.length));
+var currentPerm = Math.floor(Math.random()*3);
 function nextPerm() {
 	currentPerm += 1;
 	if (currentPerm > permutations.length - 1) {
@@ -21,6 +23,8 @@ function nextPerm() {
 	}
 	return permutations[currentPerm];
 }
+
+
 
 function events(socket) {
     console.log(socket.id + ' connected to the server.');
@@ -34,15 +38,16 @@ function events(socket) {
     	for (var i = 0; i < users.length; i++) {
     		var user = users[i];
     		data = {
-    			role: perm[i];
+    			role: perm[i]
     		}
-    		io.sockets.socket(user.id).emit('role', data);
+            console.log(i + " " + perm[i]);
+    		io.to(user.id).emit('role', data);
     	}
+        data = {};
+        io.sockets.emit('start', data);
    	}
     ///console.log(users );
-    socket.on('roundEnd', function() {
-    	freeRoles = [1,2,3];
-    });
+
     socket.on('addLine', function(data) {
     	socket.broadcast.emit('addLine', data);
     });
@@ -51,8 +56,25 @@ function events(socket) {
 		socket.broadcast.emit('event', data);
     });
 
-    socket.on()
+    socket.on('jarDrainTime', function() {
+        var currentTime = new Date().getTime();
+        if (currentTime - lastTime > 100) {
+            lastTime = currentTime;
+            data = {
+                val: 0.3
+            }
+        } 
+        else {
+            data = {
+                val: 0
+            }
+        } 
+        io.sockets.emit('jarDrainTime', data);
+    });
 
+    socket.on('jarDrainLine', function(data) {
+        socket.broadcast.emit('jarDrainLine', data);
+    });
     //socket.on('requestRole', )
 }
 
