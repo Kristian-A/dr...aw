@@ -1,6 +1,6 @@
 function Drawer() {
 	this.draw = function() {
-		background(255);
+		background(100);
 		for (var i = 0; i < lines.length; i++) {
 			lines[i].show();
 		}
@@ -12,7 +12,7 @@ function Drawer() {
 			 	resetPos = false;
 			}
 			var el = new Line(prevX, prevY, mouseX, mouseY, currentWeight, currentColor);
-		  	var dec = el.getLenght()/50
+		  	var dec = el.getLenght()/50;
 		  	data = {
 		  		val: dec
 		  	}
@@ -42,21 +42,22 @@ function Drawer() {
 		dynamicBackground();
 		palette.show();
 		slider.show();
-		if (fillPercentage > 0) {
-			jar.fill(currentColor, fillPercentage);
-		}
-		else {
-		  //drugiq na hod
-		}
+		jar.fill(currentColor, fillPercentage);
 		jar.show();
 	}
 
 	this.mousePressed = function() {
-
-	}
-
-	this.mouseReleased = function() {
-
+		if (palette.onColorBox()) {
+			currentColor = palette.getColor();
+			var data = {color: currentColor, inf: 'switchColor'}
+			socket.emit('event', data);
+		}
+		else if (slider.onSlider()) {
+			click = 'circle';
+		}
+		else {
+			click = 'canvas';
+		}  		
 	}
 }
 
@@ -70,12 +71,26 @@ function Spectator() {
 		dynamicBackground();
 		palette.show();
 		slider.show();
-		if (fillPercentage > 0) {
-		}
-		else {
-			console.log("drasti");
-		}
 		jar.fill(currentColor, fillPercentage);
 		jar.show();
+	}
+
+	this.mousePressed = function() {}
+}
+
+function Traitor() {
+	this.draw = function() {
+		background(255);
+		for (var i = 0; i < lines.length; i++) {
+			lines[i].show();
+		}
+
+		dynamicBackground(); 
+		jar.fill(currentColor, fillPercentage);
+		jar.show();		
+	}
+
+	this.mousePressed = function() {
+		console.log('traitor click');
 	}
 }

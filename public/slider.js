@@ -21,7 +21,7 @@ Slider = function(x, y, min, max, width) {
 		//selected
 		strokeWeight(this.height);
 		stroke(0);
-		line(this.circlex, this.circley, this.x+this.width, this.circley);
+		line(this.circlex, this.circley, this.x+this.width - 2, this.circley);
 
 		//ball
 		//strokeWeight(2);
@@ -34,7 +34,7 @@ Slider = function(x, y, min, max, width) {
 	}
 
 	this.onSlider = function() {
-		endx = this.x + 385;
+		endx = this.x + this.width;
 		endy = this.y + 20;
 		return mouseX >= this.x && mouseX <= endx &&
 			   mouseY >= this.y - 7 && mouseY <= endy + 7

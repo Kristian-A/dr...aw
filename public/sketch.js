@@ -40,8 +40,19 @@ function setup() {
       if (data.role == 'drawer') {
          role = new Drawer();
       }
-      else {//if (data.role == 'saboteur') {
+      else if (data.role == 'traitor') {
+         role = new Traitor();
+      }
+      else {
          role = new Spectator();
+      }
+
+      console.log(role);
+   });
+
+   socket.on('turnEnd', function() {
+      if (!(role instanceof Spectator)) {
+
       }
    });
 
@@ -83,7 +94,6 @@ function setup() {
 }
 
 function draw() {
-   console.log(start);
    if (start) {
       role.draw();
       socket.emit('jarDrainTime');
@@ -92,17 +102,7 @@ function draw() {
 
 
 function mousePressed() {
-   if (palette.onColorBox()) {
-      currentColor = palette.getColor();
-      var data = {color: currentColor, inf: 'switchColor'}
-      socket.emit('event', data);
-   }
-   else if (slider.onSlider()) {
-      click = 'circle';
-   }
-   else {
-      click = 'canvas';
-   }  
+   role.mousePressed();
 }
 
 function mouseReleased() {

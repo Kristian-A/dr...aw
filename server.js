@@ -13,9 +13,9 @@ var lastTime = new Date().getTime();
 var fill = 100;
 
 var permutations = [
-	["drawer", "saboteur", "spectator"],
-	["spectator", "drawer", "saboteur"],
-	["saboteur", "spectator", "drawer"]
+	["drawer", "traitor", "spectator"],
+	["spectator", "drawer", "traitor"],
+	["traitor", "spectator", "drawer"]
 ]
 
 var currentPerm = Math.floor(Math.random()*3);
@@ -68,10 +68,33 @@ function events(socket) {
     socket.on('event', function(data) {
 		socket.broadcast.emit('event', data);
     });
+
+    function swapPlayers() {
+    	indexes = [];
+    	for (var i = 0; i < users.length; i++) {
+    		if (users[i].role == 'traitor') { 
+    			users[i].role = 'drawer';
+    			data = {
+    				role: 'drawer'
+    			}
+    			io.to(users[i].id).emit('role', data);
+    		}
+    		else if (users[i].role == 'drawer') {
+    			users[i].role = 'traitor';
+    			data = {
+    				role: 'traitor'
+    			}
+    			io.to(users[i].id).emit('role', data);
+    		}
+    	}
+    	fill = 100;
+    	return fill;
+    }
+
     function checkLevel() {
     	if (fill < 0) {
     		fill = 0;
-    		///emit turn end
+    		swapPlayers();		
     	}
     	var data = {
     		fill: fill
@@ -96,9 +119,8 @@ function events(socket) {
 
     socket.on('jarDrainLine', function(data) {
     	fill -= data.val;
-    	
-
-        socket.broadcast.emit('jarDrainLine', checkLevel());
+    
+        io.sockets.emit('jarDrainLine', checkLevel());
     });
     socket.on('disconnect', function() {
     	for(var j = 0; j < users.length; j++) {
