@@ -1,0 +1,21 @@
+{
+  "name": "dr..aw",
+  "version": "1.0.0",
+  "description": "hack tues",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "I sam voinut e sam",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket.io": "^1.7.3"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "drawing",
+    "competitive"
+  ]
+}

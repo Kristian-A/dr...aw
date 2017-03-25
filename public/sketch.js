@@ -1,63 +1,131 @@
 var socket;
 var id;
 
+var currentColor, currentWeight;
+var lines = [];
 var SCRwidth, SCRheight;
+var canvasWidth, canvasHeight;
 var click;
 
 var resetPos = false;
 var prevX, prevY;
 
+var palette;
+var slider;
+var jar;
 
+var fillPercentage;
 
 function setup() {
-   SCRwidth = 800;
-   SCRheight = 800;
+   SCRwidth = screen.width - screen.width*0.012;
+   SCRheight = screen.height - screen.height*0.17;
 
    canvas = createCanvas(SCRwidth, SCRheight);
-   background(51);
-   strokeWeight(16);
 
+   startWidth = SCRwidth*0.3;
+   endHeight = SCRheight*0.8;
 
-   socket = io.connect('http://localhost:3000');
+   fillPercentage = 100;
+
+   socket = io.connect('http://192.168.43.107:3000');
    
    //events
    socket.on('id', function(data) {
       id = data;
    })
 
-   socket.on('mouse', function(data) {
-      prevX = data.prevx;
-      prevY = data.prevy;
-      showLine(prevX, prevY, data.x, data.y);
+   socket.on('addLine', function(data) {
+    	var el = new Line(data.startPos.x, data.startPos.y, data.endPos.x, data.endPos.y, data.weight, data.color);
+		lines.push(el);
    });
 
    socket.on('event', function(data) {
       if (data.inf == 'mouseReleased') {
          resetPos = true;
       }
+      else if (data.inf == 'slider') {
+      	 slider.move(data.sliderX);
+      }
+      else if(data.inf == 'switchColor') {
+      	currentColor = data.color;
+      }
    });
+
+   palette = new ColorBox(width - width*0.18, height - height*0.165, width*0.15);
+   slider = new Slider(width - width*0.5, height - height*0.11, 6, 50, width*0.25);
+   jar = new Jar(width*0.054, height*0.35, width*0.2);
+   currentColor = [255, 255, 255];
+   currentWeight = slider.getValue();
+
+
 }
 
-function draw() {
-   if (click == true) {
-      if (resetPos || !prevX) {
-         prevX = mouseX;
-         prevY = mouseY;
-         resetPos = false;
-      }
-      showLine(prevX, prevY, mouseX, mouseY);
-      sendmouse(mouseX, mouseY);  
-      prevX = mouseX;
-      prevY = mouseY;
-   } 
+function draw() {	
+
+	background(255);
+	for (var i = 0; i < lines.length; i++) {
+		lines[i].show();
+	}
+
+	if (click == 'canvas' && onCanvas()) {
+		if (resetPos || !prevX) {
+			prevX = mouseX;
+			prevY = mouseY;
+		 	resetPos = false;
+		}
+		var el = new Line(prevX, prevY, mouseX, mouseY, currentWeight, currentColor);
+      fillPercentage -= el.getLenght()/50;
+		lines.push(el);
+		var data = {
+			startPos: el.startPos,
+			endPos: el.endPos,
+			weight: el.weight,
+			color: el.color
+		};
+		socket.emit('addLine', data);
+		prevX = mouseX;
+		prevY = mouseY;
+	}
+
+	else if(click == 'circle') {
+		slider.move(mouseX);
+		var data = {sliderX: mouseX, inf: "slider"};
+		socket.emit('event', data);
+		currentWeight = slider.getValue();
+	} 
+	else {
+		resetPos = true;
+	}
+	dynamicBackground();
+	palette.show();
+	slider.show();
+   if (fillPercentage > 0) {
+      var dr = jar.drain(currentColor);
+      fillPercentage -= dr; 
+      jar.fill(currentColor, fillPercentage);
+	}
    else {
-      resetPos = true;
+      console.log("drugiq e");
+      //drugiq na hod
    }
+   jar.show();
 }
+
 
 function mousePressed() {
+
    console.log(id);
-      click = true; 
+   if (palette.onColorBox()) {
+      currentColor = palette.getColor();
+      var data = {color: currentColor, inf: 'switchColor'}
+      socket.emit('event', data);
+   }
+   else if (slider.onSlider()) {
+      click = 'circle';
+   }
+   else {
+      click = 'canvas';
+   }  
 }
 
 function mouseReleased() {
@@ -71,18 +139,22 @@ function mouseReleased() {
 
 //Other
 
-function showLine(ax, ay, bx, by) {
-   line(ax, ay, bx, by);
+
+function dynamicBackground() {
+   fill(47);
+   stroke(0);
+   strokeWeight(2);
+   beginShape();
+   vertex(0, 0);
+   vertex(SCRwidth*0.3, 0);
+   vertex(SCRwidth*0.3, SCRheight*0.8);
+   vertex(SCRwidth, SCRheight*0.8);
+   vertex(SCRwidth, SCRheight);
+   vertex(0, SCRheight);
+   endShape();
 }
 
-
-function sendmouse(xpos, ypos) {
-   console.log("sendmouse: " + xpos + " " + ypos);
-   var data = {
-      prevx: prevX,
-      prevy: prevY,
-      x: xpos,
-      y: ypos,
-   };
-   socket.emit('mouse', data);
+function onCanvas() {
+   return startWidth <= mouseX && mouseY <= endHeight;
 }
+
