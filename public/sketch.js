@@ -13,11 +13,13 @@ var prevX, prevY;
 var palette;
 var slider;
 var jar;
+var input;
 
 var fillPercentage;
 
 var role;
-var start = false;
+var status = "loading";
+
 
 function setup() {
    SCRwidth = screen.width - screen.width*0.012;
@@ -73,8 +75,8 @@ function setup() {
       }
    });
 
-   socket.on('start', function() {
-      start = true;
+   socket.on('status', function(data) {
+      status = data.status;
    });
 
 
@@ -89,14 +91,22 @@ function setup() {
    palette = new ColorBox(width - width*0.18, height - height*0.165, width*0.15);
    slider = new Slider(width - width*0.5, height - height*0.11, 6, 50, width*0.25);
    jar = new Jar(width*0.054, height*0.35, width*0.2);
+   input = new InputBox(,0, width*0.4, "zdr");
    currentColor = [255, 255, 255];
    currentWeight = slider.getValue();
+
 }
 
 function draw() {
-   if (start) {
+   console.log(status);
+   if (status == "playing") {
       role.draw();
       socket.emit('jarDrainTime');
+   }
+   else if (status == "guessing") {
+      role.draw();
+      input.show();
+
    }
 }
 
@@ -114,6 +124,9 @@ function mouseReleased() {
    socket.emit('event', data);
 }
 
+function keyPressed() {
+   role.keyPressed();
+}
 //Other
 
 function dynamicBackground() {

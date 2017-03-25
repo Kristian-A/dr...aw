@@ -57,7 +57,10 @@ function events(socket) {
 	io.to(currentUser.id).emit('role', data);
     i++;	
     if (users.length == 3) {
-        io.sockets.emit('start');
+        var data = {
+            status: "playing"
+        }
+        io.sockets.emit('status', data);
    	}
     ///console.log(users );
 
@@ -94,7 +97,13 @@ function events(socket) {
     function checkLevel() {
     	if (fill < 0) {
     		fill = 0;
-    		swapPlayers();		
+    		swapPlayers();
+            var data = {
+                status: "guessing"
+            }
+            io.sockets.emit('status', data);
+            
+            ///guessWord();		
     	}
     	var data = {
     		fill: fill

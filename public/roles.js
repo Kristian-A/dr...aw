@@ -59,6 +59,8 @@ function Drawer() {
 			click = 'canvas';
 		}  		
 	}
+
+	this.keyPressed = function() {}
 }
 
 function Spectator() {
@@ -76,6 +78,18 @@ function Spectator() {
 	}
 
 	this.mousePressed = function() {}
+
+	this.keyPressed = function() {
+		var word = "";
+		var key = keyTyped();
+		if (keyCode >= 65 && keyCode <=90) {
+			word += key;
+			text(word, 10, 30);
+		}
+		else if (keyCode == BACKSPACE) {
+
+		}
+	}
 }
 
 function Traitor() {
@@ -93,4 +107,6 @@ function Traitor() {
 	this.mousePressed = function() {
 		console.log('traitor click');
 	}
+
+	this.keyPressed = function() {}
 }
