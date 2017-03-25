@@ -6,8 +6,11 @@ app.use(express.static('public'));
 var io = require('socket.io')(server);
 
 var users = [];
+var cachedRoles = [];
 
 var lastTime = new Date().getTime();
+
+var fill = 100;
 
 var permutations = [
 	["drawer", "saboteur", "spectator"],
@@ -25,26 +28,36 @@ function nextPerm() {
 }
 
 
+var perm = nextPerm();
+var i = 0;
 
 function events(socket) {
     console.log(socket.id + ' connected to the server.');
 	var currentUser = {
     	id: socket.id,
     	score: 0,
+    	role: null
     };
-    users.push(currentUser);
+    users.push(currentUser); 
+    if (cachedRoles.length != 0) {
+		data = {
+			role: cachedRoles[0]
+		}
+		currentUser.role = cachedRoles[0];
+		cachedRoles.splice(0, 1);
+    }
+    else {
+	   	data = {
+			role: perm[i]
+		}
+		currentUser.role = perm[i];
+	}
+	
+    console.log(currentUser.role);
+	io.to(currentUser.id).emit('role', data);
+    i++;	
     if (users.length == 3) {
-    	var perm = nextPerm();
-    	for (var i = 0; i < users.length; i++) {
-    		var user = users[i];
-    		data = {
-    			role: perm[i]
-    		}
-            console.log(i + " " + perm[i]);
-    		io.to(user.id).emit('role', data);
-    	}
-        data = {};
-        io.sockets.emit('start', data);
+        io.sockets.emit('start');
    	}
     ///console.log(users );
 
@@ -55,25 +68,46 @@ function events(socket) {
     socket.on('event', function(data) {
 		socket.broadcast.emit('event', data);
     });
+    function checkLevel() {
+    	if (fill < 0) {
+    		fill = 0;
+    		///emit turn end
+    	}
+    	var data = {
+    		fill: fill
+    	};
+    	return data;
+    }
 
     socket.on('jarDrainTime', function() {
         var currentTime = new Date().getTime();
+        var val;
         if (currentTime - lastTime > 100) {
             lastTime = currentTime;
-            data = {
-                val: 0.3
-            }
+			val = 0.3;
         } 
         else {
-            data = {
-                val: 0
-            }
+			val = 0;
         } 
-        io.sockets.emit('jarDrainTime', data);
+        fill -= val;
+
+        io.sockets.emit('jarDrainTime', checkLevel());
     });
 
     socket.on('jarDrainLine', function(data) {
-        socket.broadcast.emit('jarDrainLine', data);
+    	fill -= data.val;
+    	
+
+        socket.broadcast.emit('jarDrainLine', checkLevel());
+    });
+    socket.on('disconnect', function() {
+    	for(var j = 0; j < users.length; j++) {
+    		if (socket.id == users[j].id) {
+    			cachedRoles.push(users[j].role);
+    			users.splice(j, 1);
+    		}
+    	}
+    	i--;
     });
     //socket.on('requestRole', )
 }

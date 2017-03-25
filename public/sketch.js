@@ -28,9 +28,8 @@ function setup() {
    startWidth = SCRwidth*0.3;
    endHeight = SCRheight*0.8;
 
-   fillPercentage = 100;
 
-   socket = io.connect('http://192.168.97.221:3000');
+   socket = io.connect('http://192.168.0.105:3000');
    
    //events
    socket.on('id', function(data) {
@@ -63,18 +62,18 @@ function setup() {
       }
    });
 
-   socket.on('start', function(data) {
+   socket.on('start', function() {
       start = true;
    });
 
-   socket.on('jarDrainTime', function(data) {
-      fillPercentage -= data.val;
-   });
 
-   socket.on('jarDrainLine', function(data) {
-      fillPercentage -= data.val;
-   });
+   function drainFill(data) {
+      fillPercentage = data.fill;
+   }
 
+   socket.on('jarDrainTime', drainFill);
+
+   socket.on('jarDrainLine', drainFill);
 
    palette = new ColorBox(width - width*0.18, height - height*0.165, width*0.15);
    slider = new Slider(width - width*0.5, height - height*0.11, 6, 50, width*0.25);

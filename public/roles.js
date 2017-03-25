@@ -13,7 +13,6 @@ function Drawer() {
 			}
 			var el = new Line(prevX, prevY, mouseX, mouseY, currentWeight, currentColor);
 		  	var dec = el.getLenght()/50
-		  	fillPercentage -= dec;
 		  	data = {
 		  		val: dec
 		  	}
