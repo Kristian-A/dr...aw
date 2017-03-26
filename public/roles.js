@@ -84,6 +84,7 @@ function Spectator() {
 			input.currentWord.push(key);
 		}
 		else if (keyCode == BACKSPACE) {
+<<<<<<< HEAD
 			//keyTyped.preventDefault();
 			var word = input.currentWord;
 			word.splice(word.length-1, 1);
@@ -122,10 +123,42 @@ function Traitor() {
 		for (var i = 0; i < lines.length; i++) {
 			lines[i].show();
 		}
+=======
+			console.log("backspace");
+			var word = input.currentWord;
+			word.splice(word.length-1, 1);
+		}
+		else if (keyCode == ENTER) {
+			//socket.emit('tries');
+			if (input.guessedWord()) {
+				//emit restart to server
+				// give points
+			}
+			else {
+				// console.log("incorrect");
+				tries--;
+				if (tries == 0) {
+					socket.emit('swap');
+				}
+			}
+			console.log(tries);
+			input.currentWord = [];
+		}
+	}
+}
+
+function Traitor() {
+	this.draw = function() {
+		background(255);
+		for (var i = 0; i < lines.length; i++) {
+			lines[i].show();
+		}
+>>>>>>> origin/master
 
 		dynamicBackground(); 
 		jar.fill(currentColor, fillPercentage);
 		jar.show();		
+<<<<<<< HEAD
 		deb1.show();
 	}
 
@@ -142,5 +175,13 @@ function Traitor() {
 		}
 	}
 
+=======
+	}
+
+	this.mousePressed = function() {
+		console.log('traitor click');
+	}
+
+>>>>>>> origin/master
 	this.keyTyped = function() {}
 }

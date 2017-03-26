@@ -11,10 +11,14 @@ var cachedRoles = [];
 var lastTime = new Date().getTime();
 
 var fill = 100;
+<<<<<<< HEAD
 var tries = 3;
 var wordList = ['bird', 'plane', 'apple', 'horse', 'rabbit',
 'table', 'chair'];
 var word;
+=======
+var tries;
+>>>>>>> origin/master
 
 var permutations = [
 	["drawer", "traitor", "spectator"],
@@ -69,7 +73,10 @@ function events(socket) {
         var data = {
             status: "playing"
         }
+<<<<<<< HEAD
         console.log(word);
+=======
+>>>>>>> origin/master
         io.sockets.emit('status', data);
    	}
     ///console.log(users );
@@ -87,6 +94,7 @@ function events(socket) {
 		socket.broadcast.emit('event', data);
     });
 
+<<<<<<< HEAD
     socket.on('guess', function (data) {
         var w = '';
         for (var i = 0; i < data.word.length; i++) {
@@ -147,6 +155,13 @@ function events(socket) {
             tries: tries
         };
         io.sockets.emit('tries', data);
+=======
+    socket.on('tries', function() {
+        var dataTries = {
+            tries: 3
+        }
+        io.sockets.emit('tries', dataTries);
+>>>>>>> origin/master
     });
 
     function swapPlayers() {
@@ -176,8 +191,16 @@ function events(socket) {
             var data = {
                 status: "guessing"
             }
+<<<<<<< HEAD
  
             io.sockets.emit('status', data);
+=======
+            var dataTries = {
+                tries: 3
+            }
+            io.sockets.emit('status', data);
+            io.sockets.emit('tries', dataTries);
+>>>>>>> origin/master
 
             ///guessWord();		
     	}

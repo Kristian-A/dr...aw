@@ -14,15 +14,22 @@ var palette;
 var slider;
 var jar;
 var input;
+<<<<<<< HEAD
 var deb1;
+=======
+>>>>>>> origin/master
 
 var fillPercentage;
 
 var role;
 var status = "loading";
+<<<<<<< HEAD
 var tries;
 
 var correctWord;
+=======
+var tries = 3;
+>>>>>>> origin/master
 
 function setup() {
    SCRwidth = screen.width - screen.width*0.012;
@@ -34,7 +41,7 @@ function setup() {
    endHeight = SCRheight*0.8;
 
 
-   socket = io.connect('http://192.168.97.221:3000');
+   socket = io.connect('http://192.168.0.105:3000');
    
    //events
    socket.on('id', function(data) {
@@ -80,6 +87,7 @@ function setup() {
 
    socket.on('status', function(data) {
       status = data.status;
+<<<<<<< HEAD
    });
 
    socket.on('tries', function(data) {
@@ -103,6 +111,14 @@ function setup() {
    socket.on('clearCanvas', function() {
       lines = [];
    });
+=======
+   });
+
+   socket.on('tries', function(data) {
+      tries = data.tries;
+   });
+
+>>>>>>> origin/master
 
    function drainFill(data) {
       fillPercentage = data.fill;
@@ -115,16 +131,24 @@ function setup() {
    palette = new ColorBox(width - width*0.18, height - height*0.165, width*0.15);
    slider = new Slider(width - width*0.5, height - height*0.11, 6, 50, width*0.25);
    jar = new Jar(width*0.054, height*0.35, width*0.2);
+<<<<<<< HEAD
    input = new InputBox(0, 0, width*0.4);
    deb1 = new Debuff("textures/button-outline.png", width*0.5, height*0.11, 100);
+=======
+   input = new InputBox(0, 0, width*0.4, "zdr");
+>>>>>>> origin/master
    currentColor = [255, 255, 255];
    currentWeight = slider.getValue();
 
 }
 
 function draw() {
+<<<<<<< HEAD
    socket.emit('tries');
    socket.emit('correctWord');
+=======
+
+>>>>>>> origin/master
    if (status == "playing") {
       role.draw();
       socket.emit('jarDrainTime');
@@ -133,6 +157,7 @@ function draw() {
       role.draw();
       input.show();
    }
+<<<<<<< HEAD
 
    if (correctWord) {
       fill(0, 255, 255);
@@ -140,6 +165,8 @@ function draw() {
    }
    deb1.use();
    deb1.stop();
+=======
+>>>>>>> origin/master
 }
 
 
@@ -163,9 +190,13 @@ function mouseReleased() {
 }
 
 function keyTyped() {
+<<<<<<< HEAD
    if (role instanceof Spectator) {
       role.keyTyped();
    }
+=======
+   role.keyTyped();
+>>>>>>> origin/master
 }
 //Other
 

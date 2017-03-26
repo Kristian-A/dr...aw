@@ -1,9 +1,17 @@
 InputBox = class {
+<<<<<<< HEAD
 	constructor(x, y, width) {
+=======
+	constructor(x, y, width, correctWord) {
+>>>>>>> origin/master
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = width*0.5;
+<<<<<<< HEAD
+=======
+		this.correctWord = correctWord;
+>>>>>>> origin/master
 		this.currentWord = [];
 		this.symbolSize = width*0.04;
 	}
@@ -24,5 +32,16 @@ InputBox = class {
 		text(w, x-this.currentWord.length*7, y);
 	}
 
+<<<<<<< HEAD
+=======
+	guessedWord() {
+		var w = '';
+		for (var i = 0; i < this.currentWord.length; i++) {
+			w += this.currentWord[i];
+		}
+		return w == this.correctWord;
+	}
+
+>>>>>>> origin/master
 
 }
