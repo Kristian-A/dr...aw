@@ -81,11 +81,28 @@ function Spectator() {
 
 	this.keyTyped = function() {
 		if (key >= 'a' && key <= 'z') {
-			input.currentWord += key;
-			console.log(input.currentWord);
+			input.currentWord.push(key);
 		}
-		else if (key == BACKSPACE) {
-			input.currentWord.splice(input.currentWord.length-1, 1);
+		else if (keyCode == BACKSPACE) {
+			console.log("backspace");
+			var word = input.currentWord;
+			word.splice(word.length-1, 1);
+		}
+		else if (keyCode == ENTER) {
+			//socket.emit('tries');
+			if (input.guessedWord()) {
+				//emit restart to server
+				// give points
+			}
+			else {
+				// console.log("incorrect");
+				tries--;
+				if (tries == 0) {
+					socket.emit('swap');
+				}
+			}
+			console.log(tries);
+			input.currentWord = [];
 		}
 	}
 }

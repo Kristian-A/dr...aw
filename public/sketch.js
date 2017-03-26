@@ -19,7 +19,7 @@ var fillPercentage;
 
 var role;
 var status = "loading";
-
+var tries = 3;
 
 function setup() {
    SCRwidth = screen.width - screen.width*0.012;
@@ -79,6 +79,10 @@ function setup() {
       status = data.status;
    });
 
+   socket.on('tries', function(data) {
+      tries = data.tries;
+   });
+
 
    function drainFill(data) {
       fillPercentage = data.fill;
@@ -106,13 +110,14 @@ function draw() {
    else if (status == "guessing") {
       role.draw();
       input.show();
-
    }
 }
 
 
 function mousePressed() {
-   role.mousePressed();
+   if(status == "playing") {
+      role.mousePressed();
+   }
 }
 
 function mouseReleased() {

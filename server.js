@@ -11,6 +11,7 @@ var cachedRoles = [];
 var lastTime = new Date().getTime();
 
 var fill = 100;
+var tries;
 
 var permutations = [
 	["drawer", "traitor", "spectator"],
@@ -72,8 +73,14 @@ function events(socket) {
 		socket.broadcast.emit('event', data);
     });
 
+    socket.on('tries', function() {
+        var dataTries = {
+            tries: 3
+        }
+        io.sockets.emit('tries', dataTries);
+    });
+
     function swapPlayers() {
-    	indexes = [];
     	for (var i = 0; i < users.length; i++) {
     		if (users[i].role == 'traitor') { 
     			users[i].role = 'drawer';
@@ -97,12 +104,15 @@ function events(socket) {
     function checkLevel() {
     	if (fill < 0) {
     		fill = 0;
-    		swapPlayers();
             var data = {
                 status: "guessing"
             }
+            var dataTries = {
+                tries: 3
+            }
             io.sockets.emit('status', data);
-            
+            io.sockets.emit('tries', dataTries);
+
             ///guessWord();		
     	}
     	var data = {
@@ -110,6 +120,14 @@ function events(socket) {
     	};
     	return data;
     }
+
+    socket.on('swap', function() {
+        swapPlayers();
+        var data = {
+            status: "playing"
+        }
+        io.sockets.emit('status', data);
+    });
 
     socket.on('jarDrainTime', function() {
         var currentTime = new Date().getTime();
