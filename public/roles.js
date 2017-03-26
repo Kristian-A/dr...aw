@@ -1,6 +1,6 @@
 function Drawer() {
 	this.draw = function() {
-		background(100);
+		background(255);
 		for (var i = 0; i < lines.length; i++) {
 			lines[i].show();
 		}
@@ -12,7 +12,8 @@ function Drawer() {
 			 	resetPos = false;
 			}
 			var el = new Line(prevX, prevY, mouseX, mouseY, currentWeight, currentColor);
-		  	var dec = el.getLenght()/50;
+		  	var dec = el.getLenght()/50
+		  	fillPercentage -= dec;
 		  	data = {
 		  		val: dec
 		  	}
@@ -42,30 +43,27 @@ function Drawer() {
 		dynamicBackground();
 		palette.show();
 		slider.show();
-		jar.fill(currentColor, fillPercentage);
+		if (fillPercentage > 0) {
+			jar.fill(currentColor, fillPercentage);
+		}
+		else {
+		  //drugiq na hod
+		}
 		jar.show();
 	}
 
 	this.mousePressed = function() {
-		if (palette.onColorBox()) {
-			currentColor = palette.getColor();
-			var data = {color: currentColor, inf: 'switchColor'}
-			socket.emit('event', data);
-		}
-		else if (slider.onSlider()) {
-			click = 'circle';
-		}
-		else {
-			click = 'canvas';
-		}  		
+
 	}
 
-	this.keyTyped = function() {}
+	this.mouseReleased = function() {
+
+	}
 }
 
 function Spectator() {
 	this.draw = function() {
-		background(255, 0, 0);
+		background(255);
 		for (var i = 0; i < lines.length; i++) {
 			lines[i].show();
 		}
@@ -73,115 +71,12 @@ function Spectator() {
 		dynamicBackground();
 		palette.show();
 		slider.show();
+		if (fillPercentage > 0) {
+		}
+		else {
+			console.log("drasti");
+		}
 		jar.fill(currentColor, fillPercentage);
 		jar.show();
 	}
-
-	this.mousePressed = function() {}
-
-	this.keyTyped = function() {
-		if (key >= 'a' && key <= 'z') {
-			input.currentWord.push(key);
-		}
-		else if (keyCode == BACKSPACE) {
-<<<<<<< HEAD
-			//keyTyped.preventDefault();
-			var word = input.currentWord;
-			word.splice(word.length-1, 1);
-			return;
-		}
-		else if (keyCode == ENTER) {
-			//socket.emit('tries');
-			var data = {
-				word: input.currentWord
-			}
-			socket.emit("guess", data);
-			input.currentWord = [];
-		}
-		data = {
-			word: input.currentWord
-		}
-		console.log(input.currentWord);
-		socket.emit('word', data);
-	}
-}
-
-function Traitor() {
-	deb1.use = function() {
-		deb1.startTime = deb1.startTime.getTime();
-		slider.circleX = 100000;
-	}
-
-	deb1.stop = function() {
-		if (new Date().getTime() - this.startTime > 30000) {
-			strokeWeight(slider.getValue());
-		}
-	}
-
-	this.draw = function() {
-		background(255);
-		for (var i = 0; i < lines.length; i++) {
-			lines[i].show();
-		}
-=======
-			console.log("backspace");
-			var word = input.currentWord;
-			word.splice(word.length-1, 1);
-		}
-		else if (keyCode == ENTER) {
-			//socket.emit('tries');
-			if (input.guessedWord()) {
-				//emit restart to server
-				// give points
-			}
-			else {
-				// console.log("incorrect");
-				tries--;
-				if (tries == 0) {
-					socket.emit('swap');
-				}
-			}
-			console.log(tries);
-			input.currentWord = [];
-		}
-	}
-}
-
-function Traitor() {
-	this.draw = function() {
-		background(255);
-		for (var i = 0; i < lines.length; i++) {
-			lines[i].show();
-		}
->>>>>>> origin/master
-
-		dynamicBackground(); 
-		jar.fill(currentColor, fillPercentage);
-		jar.show();		
-<<<<<<< HEAD
-		deb1.show();
-	}
-
-	this.mousePressed = function() {
-		if (deb1.clicked()) {
-			deb1.side -= 5;
-			deb1.use();
-		}
-	}
-
-	this.mouseReleased = function() {
-		if(deb1.clicked()) {
-			deb1.side += 5;
-		}
-	}
-
-=======
-	}
-
-	this.mousePressed = function() {
-		console.log('traitor click');
-	}
-
->>>>>>> origin/master
-	this.keyTyped = function() {}
 }

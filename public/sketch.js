@@ -13,23 +13,11 @@ var prevX, prevY;
 var palette;
 var slider;
 var jar;
-var input;
-<<<<<<< HEAD
-var deb1;
-=======
->>>>>>> origin/master
 
 var fillPercentage;
 
 var role;
-var status = "loading";
-<<<<<<< HEAD
-var tries;
-
-var correctWord;
-=======
-var tries = 3;
->>>>>>> origin/master
+var start = false;
 
 function setup() {
    SCRwidth = screen.width - screen.width*0.012;
@@ -40,8 +28,9 @@ function setup() {
    startWidth = SCRwidth*0.3;
    endHeight = SCRheight*0.8;
 
+   fillPercentage = 100;
 
-   socket = io.connect('http://192.168.0.105:3000');
+   socket = io.connect('http://192.168.97.221:3000');
    
    //events
    socket.on('id', function(data) {
@@ -52,19 +41,8 @@ function setup() {
       if (data.role == 'drawer') {
          role = new Drawer();
       }
-      else if (data.role == 'traitor') {
-         role = new Traitor();
-      }
-      else {
+      else {//if (data.role == 'saboteur') {
          role = new Spectator();
-      }
-
-      console.log(role);
-   });
-
-   socket.on('turnEnd', function() {
-      if (!(role instanceof Spectator)) {
-
       }
    });
 
@@ -85,95 +63,47 @@ function setup() {
       }
    });
 
-   socket.on('status', function(data) {
-      status = data.status;
-<<<<<<< HEAD
+   socket.on('start', function(data) {
+      start = true;
    });
 
-   socket.on('tries', function(data) {
-      tries = data.tries;
+   socket.on('jarDrainTime', function(data) {
+      fillPercentage -= data.val;
    });
 
-   socket.on('word', function(data) {
-      input.currentWord = data.word;
-      console.log(input.currentWord);
-   })
-
-   socket.on('correctWord', function(data) {
-      if (role instanceof Drawer || role instanceof Traitor) {
-         correctWord = data.word;
-      } 
-      else {
-         correctWord = null;
-      }
+   socket.on('jarDrainLine', function(data) {
+      fillPercentage -= data.val;
    });
 
-   socket.on('clearCanvas', function() {
-      lines = [];
-   });
-=======
-   });
-
-   socket.on('tries', function(data) {
-      tries = data.tries;
-   });
-
->>>>>>> origin/master
-
-   function drainFill(data) {
-      fillPercentage = data.fill;
-   }
-
-   socket.on('jarDrainTime', drainFill);
-
-   socket.on('jarDrainLine', drainFill);
 
    palette = new ColorBox(width - width*0.18, height - height*0.165, width*0.15);
    slider = new Slider(width - width*0.5, height - height*0.11, 6, 50, width*0.25);
    jar = new Jar(width*0.054, height*0.35, width*0.2);
-<<<<<<< HEAD
-   input = new InputBox(0, 0, width*0.4);
-   deb1 = new Debuff("textures/button-outline.png", width*0.5, height*0.11, 100);
-=======
-   input = new InputBox(0, 0, width*0.4, "zdr");
->>>>>>> origin/master
    currentColor = [255, 255, 255];
    currentWeight = slider.getValue();
-
 }
 
 function draw() {
-<<<<<<< HEAD
-   socket.emit('tries');
-   socket.emit('correctWord');
-=======
-
->>>>>>> origin/master
-   if (status == "playing") {
+   console.log(start);
+   if (start) {
       role.draw();
       socket.emit('jarDrainTime');
    }
-   else if (status == "guessing") {
-      role.draw();
-      input.show();
-   }
-<<<<<<< HEAD
-
-   if (correctWord) {
-      fill(0, 255, 255);
-      text(correctWord, width*0.2, height*0.8);
-   }
-   deb1.use();
-   deb1.stop();
-=======
->>>>>>> origin/master
 }
 
 
 function mousePressed() {
-   if(status == "playing") {
-      role.mousePressed();
+   if (palette.onColorBox()) {
+      currentColor = palette.getColor();
+      var data = {color: currentColor, inf: 'switchColor'}
+      socket.emit('event', data);
    }
+   else if (slider.onSlider()) {
+      click = 'circle';
+   }
+   else {
+      click = 'canvas';
+   }  
 }
 
 function mouseReleased() {
@@ -183,26 +113,13 @@ function mouseReleased() {
       inf: 'mouseReleased'
    };
    socket.emit('event', data);
-   if (role instanceof Traitor) {
-      console.log(role);
-      role.mouseReleased();
-   }
 }
 
-function keyTyped() {
-<<<<<<< HEAD
-   if (role instanceof Spectator) {
-      role.keyTyped();
-   }
-=======
-   role.keyTyped();
->>>>>>> origin/master
-}
 //Other
 
 function dynamicBackground() {
    fill(47);
-   noStroke();
+   stroke(0);
    strokeWeight(2);
    beginShape();
    vertex(0, 0);
