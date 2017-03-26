@@ -60,12 +60,12 @@ function Drawer() {
 		}  		
 	}
 
-	this.keyPressed = function() {}
+	this.keyTyped = function() {}
 }
 
 function Spectator() {
 	this.draw = function() {
-		background(255);
+		background(255, 0, 0);
 		for (var i = 0; i < lines.length; i++) {
 			lines[i].show();
 		}
@@ -79,15 +79,13 @@ function Spectator() {
 
 	this.mousePressed = function() {}
 
-	this.keyPressed = function() {
-		var word = "";
-		var key = keyTyped();
-		if (keyCode >= 65 && keyCode <=90) {
-			word += key;
-			text(word, 10, 30);
+	this.keyTyped = function() {
+		if (key >= 'a' && key <= 'z') {
+			input.currentWord += key;
+			console.log(input.currentWord);
 		}
-		else if (keyCode == BACKSPACE) {
-
+		else if (key == BACKSPACE) {
+			input.currentWord.splice(input.currentWord.length-1, 1);
 		}
 	}
 }
@@ -108,5 +106,5 @@ function Traitor() {
 		console.log('traitor click');
 	}
 
-	this.keyPressed = function() {}
+	this.keyTyped = function() {}
 }

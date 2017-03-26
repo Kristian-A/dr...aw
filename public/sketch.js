@@ -91,14 +91,14 @@ function setup() {
    palette = new ColorBox(width - width*0.18, height - height*0.165, width*0.15);
    slider = new Slider(width - width*0.5, height - height*0.11, 6, 50, width*0.25);
    jar = new Jar(width*0.054, height*0.35, width*0.2);
-   input = new InputBox(,0, width*0.4, "zdr");
+   input = new InputBox(0, 0, width*0.4, "zdr");
    currentColor = [255, 255, 255];
    currentWeight = slider.getValue();
 
 }
 
 function draw() {
-   console.log(status);
+
    if (status == "playing") {
       role.draw();
       socket.emit('jarDrainTime');
@@ -124,8 +124,8 @@ function mouseReleased() {
    socket.emit('event', data);
 }
 
-function keyPressed() {
-   role.keyPressed();
+function keyTyped() {
+   role.keyTyped();
 }
 //Other
 
